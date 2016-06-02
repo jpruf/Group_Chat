@@ -1,29 +1,42 @@
 <html>
 <head>
-<title></title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
     <title>Group Chat Socket.io Exercise</title>
     <script type ="text/javascript">
         $(document).ready(function (){
-            // this triggers the connection event in our server!
             var socket = io.connect();
-            var person = prompt("What's your ID?")
-                $("submit").click(function(){
-            socket.emit("new_user", {id: ""});
-        })
-        // socket.on("server_res", function(data){
-        //     console.log("server saysss: " + data.response)
-        // });
-        });
+            var username = prompt("What's your name?");
+            
+            socket.emit("new_user", {user: $(username)});
+            console.log(username);
 
+            socket.on("alert_peeps", function(username){
+                $("#chat").append('<p>' + username + ' has entered the chatroom!</p>')
+            })
+
+            $("#messages").submit(function(event){
+                event.preventDefault();
+                socket.emit("new_message", {message: $("#message").val()});
+                console.log(username);
+                console.log($("#message").val());
+            })
+
+            socket.on("display_message", function(message){
+                $("#chat").append('<p>' + username + ': ' + message.message + '</p>');
+            })
+        });
     </script>
 </head>
 <body>
-    <form>
-        <p>What's your ID? </p>
-        <input type="text" id="id">
-        <input type="submit" value="Submit" name="submit">
+<div id="chatroom">
+    <h1>Chatroom</h1>
+    <div id="chat">
+    </div>
+    <form id="messages">
+        <input type="text" placeholder="Enter your message here" id="message">
+        <input type="submit" name="Send">
     </form>
+</div>
 </body>
 </html>

@@ -18,11 +18,20 @@ var server = app.listen(8000, function() {
 })
 var io = require("socket.io").listen(server);
 //all code for serverside to be inside the callback passed to io.sockets.o
-io.sockets.on('connection', function (socket) {
-  console.log("Connection started");
+io.sockets.on("connection", function(socket) {
   console.log(socket.id);
-  //all the socket code goes in here!
-  socket.broadcast.emit("new_user", function(data){
-  	console.log("new user: " + data.reason);
+
+  socket.on("new_user", function(username){
+  	console.log(username.user.selector);
+  	io.emit("alert_peeps", username.user.selector);
   })
+  socket.on("new_message", function(message){
+  	console.log(message);
+  	io.emit("display_message", message);
+  })
+  // console.log(socket.user);
+  //all the socket code goes in here!
+  // socket.broadcast.emit("new_user", function(data){
+  // 	console.log("new user: " + data.reason);
+  // })
 })
