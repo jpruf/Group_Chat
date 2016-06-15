@@ -1,8 +1,10 @@
 {
   "name": "Group_Chat",
   "dependencies": {
+    "bootstrap": "^3.3.6",
     "ejs": "1.0.0",
     "express": "~4.10.0",
+    "jquery": "^2.2.4",
     "socket.io": "^1.4.6"
   }
 }
