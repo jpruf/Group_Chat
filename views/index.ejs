@@ -16,61 +16,54 @@
 		$(document).ready(function (){
 			var socket = io.connect();
 			var username = prompt("What's your name?");
-			console.log(username);
 
-			socket.on("new_member", function(data){
+			socket.emit("new_user", {user: username});
+
+			socket.on("new_member_alert", function(data){
 				$("#members").append(", " + data.name);
-
 				$("#chat").append("<p>" + data.name + " has entered the room!" + "</p>")
-			});
+			})
+
+			socket.on("disconnect_alert", function(data){
+				$("#chat").append("<p>" + data.name + " has left the room." + "</p>")
+			})
 
 			socket.on("all_members", function(data){
-				console.log(data);
 				var mems = ""
 				for (var key in data.all_users) {
 					mems += data.all_users[key] +", ";
 				}
-
 				mems = mems.slice(0,-2);
-				$("#members").text(mems);
-				$
+				$("#members_list").text(mems);
 			})
-
-
-			socket.emit("new_user", {user: username});
 
 			$("#messages").submit(function(event){
 			    event.preventDefault();
-			    socket.emit("new_message", {message: $("#message").val(), user: username});
-			});
+			    console.log($("#message").val());
+			    socket.emit("new_message", {message: $("#message").val()});
+				$("#messages")[0].reset();
+			})
 
-			$(".btn").click(function() {
-			    $(this).closest('form').find("input[type=text]").val("");
-		    });
-
-			//     console.log(username);
-			//     console.log($("#message").val());
-			// })
-
-			// socket.on("display_message", function(message){
-			//     $("#chat").append('<p class=".col-md-8">' + username + ' : ' + message.message + '</p>');
-			// })
+		    socket.on("display_message", function(data){
+		    	$("#chat").append("<p>" + data.user + ": " + data.message + "</p>");
+		    })
 		});
 	</script>
 </head>
 <body>
 <div id="chatroom" class="container">
-	<h3>Group Chat</h3>
-	<div id="members" style="background-color:yellow">
+	<h1 style="text-align:center;">Schemers Group Chat</h1>
+	<div id="members_box" style="background-color:#ffe1e6; padding: 10px; margin: 10px;">
 		<h4>Members: </h4>
+		<div id="members_list">
+		</div>
 	</div>
-	<div id="chat">
+	<div id="chat" style="margin: 10px;">
 	</div>
 	<form id="messages" class="input-group">
 		<input type="text" class="form-control" placeholder="Enter your message here" aria-describedby="basic-addon2" id="message">
-		<input type="hidden" name="author">
 		<span class="input-group-btn">
-			<button class="btn btn-default" type="submit">Send</button>
+			<input type="button" class="btn btn-default" value="Send">
 		</span>
 	</form>
 </div>
